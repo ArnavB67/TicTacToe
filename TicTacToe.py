@@ -12,7 +12,7 @@ Win_combinations=[[(0,0),(0,1),(0,2)],[(1,0),(1,1),(1,2)],[(2,0),(2,1),(2,2)],
 def Grid():
     for row in range(3):
         for col in range(3):
-            button=tk.Button(root,text='',width=10,height=5,bg='lightblue',command=lambda r=row, c=col: on_button_click(r, c))
+            button=tk.Button(root,text='',width=10,height=5,font=('Arial',20,'bold'),bg='lightblue',command=lambda r=row, c=col: on_button_click(r, c))
             button.grid(row=row,column=col)
             buttons[(row, col)] = button
 
@@ -37,35 +37,46 @@ def Restart_Game():
         button.config(text='',bg='lightblue')
     GameOverWindow.destroy()
 
+def check_win(turns):
+    turns_set=set(turns)
+    return any(turns_set==set(combo) for combo in Win_combinations)
+
+
 def on_button_click(row, col):
     global current_turn, turnsX, turnsO
     if buttons[(row, col)].cget('text') == '':
-        buttons[(row, col)].config(text=current_turn,font=('Arial',11,'bold'))
+        buttons[(row, col)].config(text=current_turn,font=('Arial',20,'bold'))
         if current_turn=="X": 
             current_turn="O"
             turnsX.append((row, col))
+            if len(turnsX)==3:
+                if check_win(turnsX):
+                    game_over_window('X')
+
             if len(turnsX)>3:
                 buttons[turnsX[0]].config(text='',bg='lightblue')
-                buttons[turnsO[0]].config(text='O',font=('Arial',11),bg='blue') 
+                buttons[turnsO[0]].config(text='O',font=('Arial',20,'bold'),bg='blue')
                 turnsX.pop(0)
-            if len(turnsX)==3:
-                if turnsX in Win_combinations:
-                    print("X wins!")
+                if check_win(turnsX):
                     game_over_window("X")
+
 
 
         elif current_turn=="O":
             current_turn="X"
             turnsO.append((row, col))
+            if len(turnsO)==3:
+                buttons[turnsX[0]].config(text='X',font=('Arial',20,'bold'),bg='blue')
+                if check_win(turnsO):
+                    game_over_window("O")
+
             if len(turnsO)>3:
                 buttons[turnsO[0]].config(text='',bg='lightblue')
-                buttons[turnsX[0]].config(text='X',font=('Arial',11),bg='blue')
+                buttons[turnsX[0]].config(text='X',font=('Arial',20,'bold'),bg='blue')
                 turnsO.pop(0)
-            if len(turnsO)==3:
-                buttons[turnsX[0]].config(text='X',font=('Arial',11),bg='blue')
-                if turnsO in Win_combinations:
-                    print("O wins!")
+                if check_win(turnsO):
                     game_over_window("O")
+
 
 
 
